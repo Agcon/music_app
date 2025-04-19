@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Music App — Главная</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<div class="container">
+    <header class="site-header">
+        <div class="logo">
+            <a href="/tracks">🎵 Music App</a>
+        </div>
+        {{if .IsAuthenticated}}
+        <div class="user-info">
+            <span>{{.Email}}</span>
+            <form action="/logout" method="post" style="display:inline;">
+                <button type="submit">Выйти</button>
+            </form>
+        </div>
+        {{else}}
+        <nav>
+            <a href="/login">Войти</a>
+            <a href="/register">Регистрация</a>
+        </nav>
+        {{end}}
+    </header>
+    <main>
+        <p>Добро пожаловать в Music App. Выберите действие.</p>
+    </main>
+</div>
+</body>
+</html>

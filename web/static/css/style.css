@@ -1,0 +1,255 @@
+/* ========== ГЛОБАЛЬНЫЕ СТИЛИ ========== */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to bottom right, #e0eafc, #cfdef3);
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    max-width: 700px;
+    margin: 60px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+header, nav, main, footer {
+    margin-bottom: 20px;
+}
+h1, h2, h3 {
+    margin: 0;
+    text-align: center;
+    color: #2c3e50;
+}
+p.artist {
+    text-align: center;
+    color: #555;
+    margin-top: 8px;
+}
+input, button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+}
+button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+button:hover {
+    background-color: #2980b9;
+}
+.error {
+    color: #e74c3c;
+    font-weight: bold;
+}
+a {
+    color: #3498db;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+/* ========== ШАПКА ========== */
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #3498db;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.site-header .logo a {
+    font-size: 1.4em;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+}
+.site-header nav a {
+    margin-left: 20px;
+    color: white;
+    font-weight: 500;
+}
+.site-header nav a:hover {
+    text-decoration: underline;
+}
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.user-info span {
+    font-weight: bold;
+}
+
+/* ========== СПИСОК ТРЕКОВ ========== */
+.track-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.track-card {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.track-info h3 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #2c3e50;
+}
+.track-info .artist {
+    margin: 6px 0 0;
+    color: #7f8c8d;
+    font-size: 0.95em;
+}
+.track-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+.btn {
+    background: #3498db;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.95em;
+    transition: background 0.3s;
+    display: inline-block;
+    cursor: pointer;
+}
+.btn:hover {
+    background: #2980b9;
+}
+.btn.danger {
+    background: #e74c3c;
+}
+.btn.danger:hover {
+    background: #c0392b;
+}
+
+/* ========== КНОПКА «НАЗАД К ТРЕКАМ» ========== */
+.back-btn {
+    text-align: left;
+    margin-bottom: 20px;
+}
+.back-btn a {
+    display: inline-block;
+    padding: 6px 12px;
+    background: #ecf0f1;
+    color: #3498db;
+    border-radius: 6px;
+    transition: background 0.3s;
+    text-decoration: none;
+}
+.back-btn a:hover {
+    background: #dce4ec;
+}
+
+/* ========== ПЛЕЕР ========== */
+.player {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fafafa;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    margin-top: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+audio {
+    display: none;
+}
+
+/* ========== КОНТРОЛЫ ========== */
+#playPauseBtn {
+    background: #2ecc71;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+#playPauseBtn:hover {
+    background: #27ae60;
+}
+
+.controls span {
+    font-variant-numeric: tabular-nums;
+    font-size: 14px;
+    color: #555;
+    width: 45px;
+    text-align: center;
+}
+
+/* Ползунок прогресса */
+#progressBar {
+    flex: 1;
+    appearance: none;
+    height: 8px;
+    background: #ddd;
+    cursor: pointer;
+}
+#progressBar::-webkit-slider-thumb {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #3498db;
+    border-radius: 80%;
+    margin-top: -1px;
+}
+#progressBar::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: #3498db;
+    border-radius: 80%;
+}
+
+/* Ползунок громкости */
+#volume {
+    width: 100px;
+    appearance: none;
+    height: 6px;
+    background: #ccc;
+    cursor: pointer;
+}
+#volume::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: #e67e22;
+    border-radius: 80%;
+    margin-top: -1px;
+}
+#volume::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: #e67e22;
+    border-radius: 80%;
+}

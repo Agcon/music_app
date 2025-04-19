@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Music App — Треки</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="logo">
+    <a href="/tracks">🎵 Music App</a>
+  </div>
+  {{if .IsAuthenticated}}
+  <div class="user-info">
+    <span>{{.Email}}</span>
+    <form action="/logout" method="post" style="display:inline;">
+      <button type="submit">Выйти</button>
+    </form>
+  </div>
+  {{else}}
+  <nav>
+    <a href="/login">Войти</a>
+    <a href="/register">Регистрация</a>
+  </nav>
+  {{end}}
+</header>
+<div class="container">
+  <h2>Список треков</h2>
+  <div class="track-list">
+    {{range .Tracks}}
+    <div class="track-card">
+      <div class="track-info">
+        <h3>{{.Title}}</h3>
+        <p class="artist">👤{{.Artist}}</p>
+      </div>
+      <div class="track-actions">
+        <a class="btn" href="/tracks/{{.ID.Hex}}/playview">Слушать</a>
+        <form action="/tracks/{{.ID.Hex}}" method="post" onsubmit="return confirm('Удалить трек?');">
+          <input type="hidden" name="_method" value="DELETE">
+          <button type="button" class="btn danger" onclick="deleteTrack('{{.ID.Hex}}')">Удалить</button>
+
+          <script>
+            function deleteTrack(id) {
+              if (!confirm('Удалить трек?')) return;
+
+              fetch('/tracks/' + id, {
+                method: 'DELETE',
+                credentials: 'include'
+              })
+                      .then(res => {
+                        if (res.ok) {
+                          location.reload();
+                        } else {
+                          alert('Ошибка при удалении');
+                        }
+                      });
+            }
+          </script>
+        </form>
+      </div>
+    </div>
+    {{else}}
+    <p>Нет треков.</p>
+    {{end}}
+  </div>
+  <div style="margin-top: 30px;">
+    <a class="btn" href="/upload">Загрузить новый трек</a>
+  </div>
+</div>
+</body>
+</html>

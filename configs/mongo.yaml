@@ -1,0 +1,2 @@
+mongo_uri: mongodb://mongo:27017
+mongo_database: music_app

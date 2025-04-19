@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Music App — Загрузка трека</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<header class="site-header">
+    <div class="logo">
+        <a href="/tracks">🎵 Music App</a>
+    </div>
+    {{if .IsAuthenticated}}
+    <div class="user-info">
+        <span>{{.Email}}</span>
+        <form action="/logout" method="post" style="display:inline;">
+            <button type="submit">Выйти</button>
+        </form>
+    </div>
+    {{else}}
+    <nav>
+        <a href="/login">Войти</a>
+        <a href="/register">Регистрация</a>
+    </nav>
+    {{end}}
+</header>
+<div class="container">
+    <h2>Загрузить трек</h2>
+    <form id="uploadForm" action="/tracks" method="post" enctype="multipart/form-data">
+        <label>Название: <input type="text" name="title" required></label><br>
+        <label>Исполнитель: <input type="text" name="artist" required></label><br>
+        <label>Жанр: <input type="text" name="genre"></label><br>
+        <label>Файл: <input type="file" name="file" required></label><br>
+        <button type="submit">Загрузить</button>
+    </form>
+</div>
+</body>
+</html>
