@@ -137,7 +137,7 @@ func (a *App) SeedExampleTracks() {
 		artist := fmt.Sprintf("Artist %d", counter)
 
 		a.trackService.UploadTrack(ctx, &model.Track{
-			Title:  trackName,
+			Title:  strings.TrimSpace(trackName),
 			Artist: strings.TrimSpace(artist),
 			Genre:  fmt.Sprintf("Genre %d", counter),
 		}, file)

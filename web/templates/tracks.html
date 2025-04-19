@@ -31,31 +31,16 @@
     <div class="track-card">
       <div class="track-info">
         <h3>{{.Title}}</h3>
-        <p class="artist">👤{{.Artist}}</p>
+        <div class="artist-line">
+          <span class="icon">👤</span>
+          <span class="artist-name">{{.Artist}}</span>
+        </div>
       </div>
       <div class="track-actions">
         <a class="btn" href="/tracks/{{.ID.Hex}}/playview">Слушать</a>
         <form action="/tracks/{{.ID.Hex}}" method="post" onsubmit="return confirm('Удалить трек?');">
           <input type="hidden" name="_method" value="DELETE">
           <button type="button" class="btn danger" onclick="deleteTrack('{{.ID.Hex}}')">Удалить</button>
-
-          <script>
-            function deleteTrack(id) {
-              if (!confirm('Удалить трек?')) return;
-
-              fetch('/tracks/' + id, {
-                method: 'DELETE',
-                credentials: 'include'
-              })
-                      .then(res => {
-                        if (res.ok) {
-                          location.reload();
-                        } else {
-                          alert('Ошибка при удалении');
-                        }
-                      });
-            }
-          </script>
         </form>
       </div>
     </div>
@@ -67,5 +52,22 @@
     <a class="btn" href="/upload">Загрузить новый трек</a>
   </div>
 </div>
+
+<script>
+  function deleteTrack(id) {
+    if (!confirm('Удалить трек?')) return;
+
+    fetch('/tracks/' + id, {
+      method: 'DELETE',
+      credentials: 'include'
+    }).then(res => {
+      if (res.ok) {
+        location.reload();
+      } else {
+        alert('Ошибка при удалении');
+      }
+    });
+  }
+</script>
 </body>
 </html>

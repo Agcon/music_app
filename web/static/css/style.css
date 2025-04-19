@@ -253,3 +253,23 @@ audio {
     background: #e67e22;
     border-radius: 80%;
 }
+
+.artist-line {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #7f8c8d;
+    font-size: 0.95em;
+    margin-top: 6px;
+}
+
+.artist-line .icon {
+    font-size: 1em;
+    line-height: 1;
+}
+
+.artist-line .artist-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
