@@ -29,8 +29,10 @@ func TemplateVars(sm auth.SessionManager, ur user.Repository) gin.HandlerFunc {
 			return
 		}
 
+		c.Set("user", u)
 		c.Set("IsAuthenticated", true)
 		c.Set("Email", u.Email)
+		c.Set("Role", u.Role)
 		c.Next()
 	}
 }

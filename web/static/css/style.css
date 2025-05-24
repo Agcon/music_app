@@ -273,3 +273,47 @@ audio {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.genre-line {
+    margin-top: 4px;
+    color: #95a5a6;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.genre-line .icon {
+    font-size: 1em;
+}
+
+.search-bar {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.search-bar input[type="text"] {
+    padding: 10px;
+    width: 60%;
+    max-width: 400px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.search-bar button {
+    padding: 10px 16px;
+    margin-left: 8px;
+    border-radius: 8px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.pagination {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.pagination .btn {
+    margin: 0 10px;
+}

@@ -14,6 +14,9 @@ type Service interface {
 	Register(ctx context.Context, username, email, password string) error
 	Login(ctx context.Context, email, password string) (int64, string, error)
 	Logout(ctx context.Context, token string) error
+	ListAll(ctx context.Context) ([]User, error)
+	DeleteUserByID(ctx context.Context, id int64) error
+	UpdateUserRole(ctx context.Context, userID int64, newRole string) error
 }
 
 type service struct {
@@ -65,4 +68,16 @@ func (s *service) Login(ctx context.Context, email, password string) (int64, str
 
 func (s *service) Logout(ctx context.Context, token string) error {
 	return s.session.Delete(ctx, token)
+}
+
+func (s *service) ListAll(ctx context.Context) ([]User, error) {
+	return s.repo.GetAll(ctx)
+}
+
+func (s *service) DeleteUserByID(ctx context.Context, id int64) error {
+	return s.repo.Delete(ctx, id)
+}
+
+func (s *service) UpdateUserRole(ctx context.Context, userID int64, newRole string) error {
+	return s.repo.UpdateRole(ctx, userID, newRole)
 }

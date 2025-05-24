@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Music App — Треки</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="logo">
+    <a href="/tracks">🎵 Music App</a>
+  </div>
+  {{if .IsAuthenticated}}
+  <div class="user-info">
+    <span>{{.Email}}</span>
+    <form action="/logout" method="post" style="display:inline;">
+      <button type="submit">Выйти</button>
+    </form>
+  </div>
+  {{else}}
+  <nav>
+    <a href="/login">Войти</a>
+    <a href="/register">Регистрация</a>
+  </nav>
+  {{end}}
+</header>
+<div class="container">
+  <h1>Пользователи</h1>
+  <table>
+    <thead>
+    <tr><th>Email</th><th>Роль</th><th>Изменить роль</th></tr>
+    </thead>
+    <tbody>
+    {{range .Users}}
+    <tr>
+      <td>{{.Email}}</td>
+      <td>{{.Role}}</td>
+      <td>
+        <form method="POST" action="/admin/users/{{.ID}}/role">
+          <select name="role">
+            <option value="user" {{if eq .Role "user"}}selected{{end}}>user</option>
+            <option value="admin" {{if eq .Role "admin"}}selected{{end}}>admin</option>
+          </select>
+          <button type="submit">Изменить</button>
+        </form>
+      </td>
+    </tr>
+    {{end}}
+    </tbody>
+  </table>
+</div>
+</body>
+</html>

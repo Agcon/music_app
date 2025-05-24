@@ -47,7 +47,7 @@ func (h *Handler) Login(c *gin.Context) {
 
 	userID, sessionToken, err := h.svc.Login(context.Background(), email, password)
 	if err != nil {
-		c.HTML(http.StatusUnauthorized, "login.html", gin.H{"error": err.Error()})
+		c.HTML(http.StatusUnauthorized, "login.html", gin.H{"Error": err.Error()})
 		return
 	}
 

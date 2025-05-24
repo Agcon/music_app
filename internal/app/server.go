@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
+	"html/template"
 	"io/fs"
 	"log"
 	"music_app/internal/databases"
@@ -26,15 +27,20 @@ func (a *App) Run() error {
 		return fmt.Errorf("failed to create GridFS bucket: %w", err)
 	}
 
-	trackCollection := a.mongoClient.Database.Collection("tracks")
-	a.trackRepo = repository.NewTrackRepository(trackCollection, bucket)
+	db := a.mongoClient.Database
+	a.trackRepo = repository.NewTrackRepository(db.Collection("tracks"), bucket)
 	a.trackService = service.NewTrackService(a.trackRepo)
 	a.trackHandler = handler.NewTrackHandler(a.trackService)
 
 	router := gin.Default()
 	router.Static("/static", "./web/static")
-	router.LoadHTMLGlob("web/templates/*.html")
+	funcMap := getFuncMap()
+	htmlTemplate := template.Must(template.New("").Funcs(funcMap).ParseGlob("web/templates/**/*.html"))
+	router.SetHTMLTemplate(htmlTemplate)
 	router.Use(middleware.TemplateVars(a.sessionManager, a.userRepo))
+
+	svc := user.NewService(a.userRepo, a.sessionManager)
+	userHandler := user.NewHandler(svc, a.jwtManager)
 
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.html", gin.H{
@@ -55,13 +61,10 @@ func (a *App) Run() error {
 		})
 	})
 
-	svc := user.NewService(a.userRepo, a.sessionManager)
-	userHandler := user.NewHandler(svc, a.jwtManager)
-
-	a.SeedExampleTracks()
-
 	router.POST("/register", userHandler.Register)
 	router.POST("/login", userHandler.Login)
+
+	a.SeedExampleTracks()
 
 	auth := router.Group("/")
 	auth.Use(middleware.AuthMiddleware(a.sessionManager))
@@ -76,18 +79,9 @@ func (a *App) Run() error {
 	auth.POST("/logout", userHandler.Logout)
 	auth.POST("/tracks", a.trackHandler.UploadTrackHandler)
 
-	auth.GET("/tracks", func(c *gin.Context) {
-		tracks, err := a.trackHandler.ListTracksHandlerData(c.Request.Context())
-		if err != nil {
-			c.String(http.StatusInternalServerError, "failed to get tracks")
-			return
-		}
-		c.HTML(http.StatusOK, "tracks.html", gin.H{
-			"Tracks":          tracks,
-			"IsAuthenticated": true,
-			"Email":           c.GetString("Email"),
-		})
-	})
+	auth.GET("/tracks", a.trackHandler.ListTracksHandler)
+
+	auth.GET("/recommendations", a.trackHandler.RecommendationsHandler)
 
 	auth.GET("/tracks/:id/playview", func(c *gin.Context) {
 		id := c.Param("id")
@@ -107,6 +101,11 @@ func (a *App) Run() error {
 	auth.GET("/tracks/:id/play", a.trackHandler.PlayTrackHandler)
 	auth.DELETE("/tracks/:id", a.trackHandler.DeleteTrackHandler)
 
+	admin := auth.Group("/admin")
+	admin.Use(middleware.RequireAdmin())
+	admin.GET("/users", userHandler.ListUsers)
+	admin.POST("/users/:id/role", userHandler.ChangeUserRole)
+
 	log.Printf("Starting server on %s", a.cfg.App.HTTPPort)
 	return router.Run(a.cfg.App.HTTPPort)
 }
@@ -120,29 +119,56 @@ func (a *App) SeedExampleTracks() {
 	}
 
 	assetsPath := "assets"
-	counter := 1
 
-	filepath.WalkDir(assetsPath, func(path string, d fs.DirEntry, err error) error {
-		if err != nil || d.IsDir() || !strings.HasSuffix(d.Name(), ".mp3") {
+	err = filepath.WalkDir(assetsPath, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return fmt.Errorf("failed to read directory: %w", err)
+		}
+		if d.IsDir() || !strings.HasSuffix(d.Name(), ".mp3") {
 			return nil
 		}
 
 		file, err := os.Open(path)
 		if err != nil {
-			return nil
+			return fmt.Errorf("failed to open file: %w", err)
 		}
 		defer file.Close()
 
-		trackName := strings.TrimSuffix(d.Name(), ".mp3")
-		artist := fmt.Sprintf("Artist %d", counter)
+		trackFileName := strings.TrimSuffix(d.Name(), ".mp3")
+		trackInfo := strings.Split(trackFileName, "-")
+		if len(trackInfo) != 3 {
+			log.Printf("skipping malformed file name: %s", d.Name())
+			return nil
+		}
+		trackName := strings.Replace(strings.TrimSpace(trackInfo[1]), "_", " ", -1)
+		artistName := strings.Replace(strings.TrimSpace(trackInfo[0]), "_", " ", -1)
+		genreName := strings.Replace(strings.TrimSpace(trackInfo[2]), "_", " ", -1)
 
-		a.trackService.UploadTrack(ctx, &model.Track{
-			Title:  strings.TrimSpace(trackName),
-			Artist: strings.TrimSpace(artist),
-			Genre:  fmt.Sprintf("Genre %d", counter),
+		err = a.trackService.UploadTrack(ctx, &model.Track{
+			Title:  trackName,
+			Artist: artistName,
+			Genre:  genreName,
 		}, file)
 
-		counter++
+		if err != nil {
+			return fmt.Errorf("failed to upload track: %w", err)
+		}
+
 		return nil
 	})
+
+	if err != nil {
+		log.Printf("failed to seed example tracks: %v", err)
+	}
+}
+
+func getFuncMap() template.FuncMap {
+	return template.FuncMap{
+		"add": func(a, b int) int {
+			return a + b
+		},
+		"sub": func(a, b int) int {
+			return a - b
+		},
+	}
 }

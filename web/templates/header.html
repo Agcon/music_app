@@ -1,0 +1,27 @@
+{{define "header.html"}}
+<header class="site-header">
+    <div class="logo">
+        <a href="/tracks">🎵 Music App</a>
+    </div>
+    {{if .IsAuthenticated}}
+    <div class="user-info">
+        <span>{{.Email}}</span>
+        <form action="/logout" method="post" style="display:inline;">
+            <button type="submit">Выйти</button>
+        </form>
+    </div>
+    <nav>
+        <a href="/tracks">Треки</a>
+        <a href="/recommendations">Мои рекомендации</a>
+        {{if eq .Role "admin"}}
+        <a href="/admin/users">Админка</a>
+        {{end}}
+    </nav>
+    {{else}}
+    <nav>
+        <a href="/login">Войти</a>
+        <a href="/register">Регистрация</a>
+    </nav>
+    {{end}}
+</header>
+{{end}}

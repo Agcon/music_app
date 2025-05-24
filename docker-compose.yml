@@ -38,7 +38,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: music_app_server
     ports:
       - "8086:8086"
@@ -51,8 +51,7 @@ services:
       - MONGO_URI=mongodb://mongo:27017
       - REDIS_ADDR=redis:6379
     volumes:
-      - ./web:/app/web
-      - ./assets:/app/assets
+      - .:/app
     networks:
       - music_app_net
 

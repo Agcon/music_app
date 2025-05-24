@@ -5,6 +5,7 @@ import (
 	"context"
 	"io"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -55,21 +56,36 @@ func (h *TrackHandler) UploadTrackHandler(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/tracks")
 }
 
-func (h *TrackHandler) ListTracksHandlerData(ctx context.Context) ([]*model.Track, error) {
-	return h.svc.ListTracks(ctx)
+func (h *TrackHandler) ListTracksHandlerData(ctx context.Context, query string, page, pageSize int) ([]*model.Track, bool, error) {
+	return h.svc.ListTracks(ctx, query, page, pageSize)
 }
 
 func (h *TrackHandler) ListTracksHandler(c *gin.Context) {
+	query := c.Query("q")
+	pageStr := c.Query("page")
+	page := 1
+	if p, err := strconv.Atoi(pageStr); err == nil && p > 0 {
+		page = p
+	}
+
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 10*time.Second)
 	defer cancel()
 
-	tracks, err := h.svc.ListTracks(ctx)
+	tracks, hasNext, err := h.svc.ListTracks(ctx, query, page, pageSize)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to list tracks"})
 		return
 	}
 
-	c.JSON(http.StatusOK, tracks)
+	c.HTML(http.StatusOK, "tracks.html", gin.H{
+		"Tracks":          tracks,
+		"IsAuthenticated": c.GetBool("IsAuthenticated"),
+		"Email":           c.GetString("Email"),
+		"Role":            c.GetString("Role"),
+		"Page":            page,
+		"HasNext":         hasNext,
+		"Query":           query,
+	})
 }
 
 func (h *TrackHandler) GetTrackHandler(c *gin.Context) {
@@ -127,4 +143,22 @@ func (h *TrackHandler) PlayTrackHandler(c *gin.Context) {
 
 func (h *TrackHandler) GetTrackData(ctx context.Context, id string) (*model.Track, error) {
 	return h.svc.GetTrack(ctx, id)
+}
+
+func (h *TrackHandler) RecommendationsHandler(c *gin.Context) {
+	userID := c.GetInt64("UserID")
+	ctx, cancel := context.WithTimeout(c.Request.Context(), 10*time.Second)
+	defer cancel()
+
+	tracks, err := h.svc.GetRecommendations(ctx, userID)
+	if err != nil {
+		c.HTML(http.StatusInternalServerError, "error.html", gin.H{"error": "Ошибка при получении рекомендаций"})
+		return
+	}
+
+	c.HTML(http.StatusOK, "recommendations.html", gin.H{
+		"Tracks":          tracks,
+		"Email":           c.GetString("Email"),
+		"IsAuthenticated": true,
+	})
 }

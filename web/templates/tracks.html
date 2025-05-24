@@ -24,8 +24,17 @@
   </nav>
   {{end}}
 </header>
+
 <div class="container">
   <h2>Список треков</h2>
+
+  <div class="search-bar">
+    <form method="get" action="/tracks">
+      <input type="text" name="q" placeholder="Поиск по названию или артисту" value="{{.Query}}">
+      <button type="submit">Найти</button>
+    </form>
+  </div>
+
   <div class="track-list">
     {{range .Tracks}}
     <div class="track-card">
@@ -35,19 +44,36 @@
           <span class="icon">👤</span>
           <span class="artist-name">{{.Artist}}</span>
         </div>
+        <div class="genre-line">
+          <span class="icon">🎧</span>
+          <span class="genre-name">{{.Genre}}</span>
+        </div>
       </div>
       <div class="track-actions">
         <a class="btn" href="/tracks/{{.ID.Hex}}/playview">Слушать</a>
+        {{if eq $.Role "admin"}}
         <form action="/tracks/{{.ID.Hex}}" method="post" onsubmit="return confirm('Удалить трек?');">
           <input type="hidden" name="_method" value="DELETE">
           <button type="button" class="btn danger" onclick="deleteTrack('{{.ID.Hex}}')">Удалить</button>
         </form>
+        {{end}}
       </div>
     </div>
     {{else}}
     <p>Нет треков.</p>
     {{end}}
   </div>
+
+  <div class="pagination">
+    {{if gt .Page 1}}
+    <a class="btn" href="/tracks?page={{sub .Page 1}}{{if .Query}}&q={{.Query}}{{end}}">← Назад</a>
+    {{end}}
+    <span>Страница {{.Page}}</span>
+    {{if .HasNext}}
+    <a class="btn" href="/tracks?page={{add .Page 1}}{{if .Query}}&q={{.Query}}{{end}}">Вперёд →</a>
+    {{end}}
+  </div>
+
   <div style="margin-top: 30px;">
     <a class="btn" href="/upload">Загрузить новый трек</a>
   </div>

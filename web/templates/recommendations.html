@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Music App — Рекомендации</title>
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+{{template "header.html" .}}
+
+<div class="container">
+  <h2>Ваши рекомендации</h2>
+
+  <div class="track-list">
+    {{range .Tracks}}
+    <div class="track-card">
+      <div class="track-info">
+        <h3>{{.Title}}</h3>
+        <div class="artist-line">
+          <span class="icon">👤</span>
+          <span class="artist-name">{{.Artist}}</span>
+        </div>
+        <div class="genre-line">
+          <span class="icon">🎧</span>
+          <span class="genre-name">{{.Genre}}</span>
+        </div>
+      </div>
+      <div class="track-actions">
+        <a class="btn" href="/tracks/{{.ID.Hex}}/playview">Слушать</a>
+      </div>
+    </div>
+    {{else}}
+    <p>Нет рекомендаций. Начните слушать треки, и мы подберем вам что-нибудь.</p>
+    {{end}}
+  </div>
+
+  <div style="margin-top: 30px;">
+    <a class="btn" href="/tracks">Назад к трекам</a>
+  </div>
+</div>
+</body>
+</html>
