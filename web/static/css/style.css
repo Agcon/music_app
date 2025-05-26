@@ -59,38 +59,67 @@ a:hover {
 }
 
 /* ========== ШАПКА ========== */
+/* ========== ШАПКА ========== */
 .site-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     background: #3498db;
     color: white;
-    padding: 16px 24px;
+    padding: 12px 20px;
     border-radius: 12px;
     margin-bottom: 30px;
     box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
-.site-header .logo a {
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    gap: 24px;
+}
+
+.logo a {
     font-size: 1.4em;
     color: white;
     text-decoration: none;
     font-weight: bold;
+    white-space: nowrap;
 }
-.site-header nav a {
-    margin-left: 20px;
+
+/* Навигация */
+.nav-center {
+    display: flex;
+    gap: 20px;
+}
+
+.nav-center a {
     color: white;
     font-weight: 500;
+    text-decoration: none;
 }
-.site-header nav a:hover {
+.nav-center a:hover {
     text-decoration: underline;
 }
+
+/* Блок юзера */
 .user-info {
     display: flex;
     align-items: center;
     gap: 16px;
+    white-space: nowrap;
 }
 .user-info span {
     font-weight: bold;
+}
+
+/* Дополнительно уменьшаем высоту кнопки */
+.user-info button {
+    padding: 8px 12px;
+}
+
+/* Убираем лишнюю высоту, если появится */
+.header-left, .header-center, .header-right {
+    display: flex;
+    align-items: center;
 }
 
 /* ========== СПИСОК ТРЕКОВ ========== */
@@ -106,14 +135,26 @@ a:hover {
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 20px;
 }
+
+.track-info {
+    flex: 1;
+    min-width: 0;
+}
+
 .track-info h3 {
     margin: 0;
+    padding: 0;
+    text-align: left;
+    word-break: break-word;
     font-size: 1.2em;
     color: #2c3e50;
+    max-width: 100%;
 }
+
 .track-info .artist {
     margin: 6px 0 0;
     color: #7f8c8d;
@@ -293,8 +334,8 @@ audio {
 
 .search-bar input[type="text"] {
     padding: 10px;
-    width: 60%;
-    max-width: 400px;
+    width: 80%;
+    max-width: 600px;
     border-radius: 8px;
     border: 1px solid #ccc;
 }

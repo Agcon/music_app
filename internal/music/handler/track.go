@@ -117,11 +117,15 @@ func (h *TrackHandler) DeleteTrackHandler(c *gin.Context) {
 
 func (h *TrackHandler) PlayTrackHandler(c *gin.Context) {
 	id := c.Param("id")
+	userID := c.GetInt64("UserID")
+
 	track, err := h.svc.GetTrack(c.Request.Context(), id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "track not found"})
 		return
 	}
+
+	h.svc.TrackListening(c.Request.Context(), userID, id)
 
 	downloadStream, err := h.svc.DownloadTrack(track.FileID)
 	if err != nil {
@@ -159,6 +163,7 @@ func (h *TrackHandler) RecommendationsHandler(c *gin.Context) {
 	c.HTML(http.StatusOK, "recommendations.html", gin.H{
 		"Tracks":          tracks,
 		"Email":           c.GetString("Email"),
+		"Role":            c.GetString("Role"),
 		"IsAuthenticated": true,
 	})
 }

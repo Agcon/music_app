@@ -6,24 +6,8 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-<header class="site-header">
-    <div class="logo">
-        <a href="/tracks">🎵 Music App</a>
-    </div>
-    {{if .IsAuthenticated}}
-    <div class="user-info">
-        <span>{{.Email}}</span>
-        <form action="/logout" method="post" style="display:inline;">
-            <button type="submit">Выйти</button>
-        </form>
-    </div>
-    {{else}}
-    <nav>
-        <a href="/login">Войти</a>
-        <a href="/register">Регистрация</a>
-    </nav>
-    {{end}}
-</header>
+{{template "header.html" .}}
+
 <div class="container">
     <h1>Панель администратора</h1>
     <ul>

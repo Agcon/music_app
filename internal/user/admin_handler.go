@@ -8,7 +8,11 @@ import (
 )
 
 func (h *Handler) AdminDashboard(c *gin.Context) {
-	c.HTML(http.StatusOK, "admin_dashboard.html", gin.H{})
+	c.HTML(http.StatusOK, "admin_dashboard.html", gin.H{
+		"IsAuthenticated": c.GetBool("IsAuthenticated"),
+		"Email":           c.GetString("Email"),
+		"Role":            c.GetString("Role"),
+	})
 }
 
 func (h *Handler) ListUsers(c *gin.Context) {
@@ -19,7 +23,10 @@ func (h *Handler) ListUsers(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "admin_users.html", gin.H{
-		"Users": users,
+		"Users":           users,
+		"IsAuthenticated": c.GetBool("IsAuthenticated"),
+		"Email":           c.GetString("Email"),
+		"Role":            c.GetString("Role"),
 	})
 }
 

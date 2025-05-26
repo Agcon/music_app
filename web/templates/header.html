@@ -1,27 +1,39 @@
 {{define "header.html"}}
 <header class="site-header">
-    <div class="logo">
-        <a href="/tracks">🎵 Music App</a>
-    </div>
-    {{if .IsAuthenticated}}
-    <div class="user-info">
-        <span>{{.Email}}</span>
-        <form action="/logout" method="post" style="display:inline;">
-            <button type="submit">Выйти</button>
-        </form>
-    </div>
-    <nav>
-        <a href="/tracks">Треки</a>
-        <a href="/recommendations">Мои рекомендации</a>
-        {{if eq .Role "admin"}}
-        <a href="/admin/users">Админка</a>
+    <div class="header-container">
+        <div class="header-left">
+            <div class="logo">
+                <a href="/tracks">🎵 Music App</a>
+            </div>
+        </div>
+
+        {{if .IsAuthenticated}}
+        <div class="header-center">
+            <nav class="nav-center">
+                <a href="/tracks">Треки</a>
+                <a href="/recommendations">Мои рекомендации</a>
+                {{if eq .Role "admin"}}
+                <a href="/admin/users">Админка</a>
+                {{end}}
+            </nav>
+        </div>
+
+        <div class="header-right">
+            <div class="user-info">
+                <span>{{.Email}}</span>
+                <form action="/logout" method="post" style="display:inline;">
+                    <button type="submit">Выйти</button>
+                </form>
+            </div>
+        </div>
+        {{else}}
+        <div class="header-right">
+            <nav class="nav-center">
+                <a href="/login">Войти</a>
+                <a href="/register">Регистрация</a>
+            </nav>
+        </div>
         {{end}}
-    </nav>
-    {{else}}
-    <nav>
-        <a href="/login">Войти</a>
-        <a href="/register">Регистрация</a>
-    </nav>
-    {{end}}
+    </div>
 </header>
 {{end}}

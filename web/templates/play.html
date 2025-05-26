@@ -6,54 +6,30 @@
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-<header class="site-header">
-  <div class="logo">
-    <a href="/tracks">🎵 Music App</a>
-  </div>
-  {{if .IsAuthenticated}}
-  <div class="user-info">
-    <span>{{.Email}}</span>
-    <form action="/logout" method="post" style="display:inline;">
-      <button type="submit">Выйти</button>
-    </form>
-  </div>
-  {{else}}
-  <nav>
-    <a href="/login">Войти</a>
-    <a href="/register">Регистрация</a>
-  </nav>
-  {{end}}
-</header>
+{{template "header.html" .}}
+
 <div class="container">
-  <!-- 1) Кнопка «Назад ко всем трекам» -->
   <div class="back-btn">
     <a href="/tracks">&larr; Все треки</a>
   </div>
 
-  <!-- 2) Название и артист -->
   <h1>{{ .Track.Title }}</h1>
   <p class="artist">{{ .Track.Artist }}</p>
 
-  <!-- 3) Плеер -->
   <div class="player">
     <audio id="audio" preload="metadata">
       <source src="/tracks/{{ .Track.ID.Hex }}/play" type="audio/mpeg">
       Ваш браузер не поддерживает аудио.
     </audio>
 
-    <!-- Кнопка play/pause -->
     <button id="playPauseBtn" title="Play/Pause">▶️</button>
 
-    <!-- Текущее время -->
     <span id="currentTime">0:00</span>
 
-    <!-- Ползунок -->
     <input type="range" id="progressBar" value="0" min="0" step="1">
 
-    <!-- Общее время -->
     <span id="duration">0:00</span>
 
-    <!-- Регулятор громкости -->
     <input type="range" id="volume" min="0" max="1" step="0.01" value="1" title="Громкость">
   </div>
 </div>

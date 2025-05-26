@@ -20,6 +20,7 @@ func RequireAdmin() gin.HandlerFunc {
 			return
 		}
 
+		c.Set("IsAuthenticated", true)
 		c.Next()
 	}
 }

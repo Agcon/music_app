@@ -33,6 +33,7 @@ func TemplateVars(sm auth.SessionManager, ur user.Repository) gin.HandlerFunc {
 		c.Set("IsAuthenticated", true)
 		c.Set("Email", u.Email)
 		c.Set("Role", u.Role)
+		с.Set("UserID", u.ID)
 		c.Next()
 	}
 }

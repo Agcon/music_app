@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"music_app/internal/music/model"
-	"music_app/internal/music/repository"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
+
+	"music_app/internal/music/model"
+	"music_app/internal/music/repository"
 )
 
 type TrackService interface {
@@ -27,8 +29,14 @@ type trackService struct {
 	historyRepo repository.HistoryRepository
 }
 
-func NewTrackService(repo repository.TrackRepository) TrackService {
-	return &trackService{repo: repo}
+func NewTrackService(
+	repo repository.TrackRepository,
+	historyRepo repository.HistoryRepository,
+) TrackService {
+	return &trackService{
+		repo:        repo,
+		historyRepo: historyRepo,
+	}
 }
 
 func (s *trackService) UploadTrack(ctx context.Context, track *model.Track, file io.Reader) error {
@@ -38,7 +46,7 @@ func (s *trackService) UploadTrack(ctx context.Context, track *model.Track, file
 func (s *trackService) GetTrack(ctx context.Context, id string) (*model.Track, error) {
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse track id: %w", err)
+		return nil, fmt.Errorf("invalid track ID: %w", err)
 	}
 	return s.repo.GetTrack(ctx, objID)
 }
@@ -50,7 +58,7 @@ func (s *trackService) ListTracks(ctx context.Context, query string, page, pageS
 func (s *trackService) DeleteTrack(ctx context.Context, id string) error {
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
-		return fmt.Errorf("failed to parse track id: %w", err)
+		return fmt.Errorf("invalid track ID: %w", err)
 	}
 	return s.repo.DeleteTrack(ctx, objID)
 }
@@ -75,6 +83,7 @@ func (s *trackService) TrackListening(ctx context.Context, userID int64, trackID
 
 	track, err := s.repo.GetTrack(ctx, trackID)
 	if err != nil {
+		log.Printf("failed to get track: %v", err)
 		return
 	}
 
@@ -85,5 +94,8 @@ func (s *trackService) TrackListening(ctx context.Context, userID int64, trackID
 		Timestamp: time.Now(),
 	}
 
-	_ = s.repo.SaveTrackListen(ctx, listen)
+	err = s.historyRepo.SaveTrackListen(ctx, listen)
+	if err != nil {
+		log.Printf("failed to save track listen: %v", err)
+	}
 }

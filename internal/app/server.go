@@ -19,6 +19,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 func (a *App) Run() error {
@@ -29,13 +30,14 @@ func (a *App) Run() error {
 
 	db := a.mongoClient.Database
 	a.trackRepo = repository.NewTrackRepository(db.Collection("tracks"), bucket)
-	a.trackService = service.NewTrackService(a.trackRepo)
+	historyRepo := repository.NewHistoryRepository(db)
+	a.trackService = service.NewTrackService(a.trackRepo, historyRepo)
 	a.trackHandler = handler.NewTrackHandler(a.trackService)
 
 	router := gin.Default()
 	router.Static("/static", "./web/static")
 	funcMap := getFuncMap()
-	htmlTemplate := template.Must(template.New("").Funcs(funcMap).ParseGlob("web/templates/**/*.html"))
+	htmlTemplate := loadTemplates("web/templates", funcMap)
 	router.SetHTMLTemplate(htmlTemplate)
 	router.Use(middleware.TemplateVars(a.sessionManager, a.userRepo))
 
@@ -85,11 +87,19 @@ func (a *App) Run() error {
 
 	auth.GET("/tracks/:id/playview", func(c *gin.Context) {
 		id := c.Param("id")
-		track, err := a.trackHandler.GetTrackData(c.Request.Context(), id)
+		userID := c.GetInt64("UserID")
+
+		ctx, cancel := context.WithTimeout(c.Request.Context(), 10*time.Second)
+		defer cancel()
+
+		track, err := a.trackHandler.GetTrackData(ctx, id)
 		if err != nil {
 			c.String(http.StatusNotFound, "not found")
 			return
 		}
+
+		a.trackService.TrackListening(ctx, userID, id)
+
 		c.HTML(http.StatusOK, "play.html", gin.H{
 			"Track":           track,
 			"IsAuthenticated": true,
@@ -171,4 +181,23 @@ func getFuncMap() template.FuncMap {
 			return a - b
 		},
 	}
+}
+
+func loadTemplates(pattern string, funcMap template.FuncMap) *template.Template {
+	tmpl := template.New("").Funcs(funcMap)
+
+	err := filepath.Walk(pattern, func(path string, info fs.FileInfo, err error) error {
+		if err != nil || info.IsDir() || !strings.HasSuffix(path, ".html") {
+			return nil
+		}
+		_, parseErr := tmpl.ParseFiles(path)
+		return parseErr
+	})
+
+	if err != nil {
+		log.Printf("failed to load templates: %v", err)
+		return nil
+	}
+
+	return tmpl
 }

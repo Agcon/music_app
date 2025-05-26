@@ -7,24 +7,7 @@
 </head>
 <body>
 <div class="container">
-    <header class="site-header">
-        <div class="logo">
-            <a href="/tracks">🎵 Music App</a>
-        </div>
-        {{if .IsAuthenticated}}
-        <div class="user-info">
-            <span>{{.Email}}</span>
-            <form action="/logout" method="post" style="display:inline;">
-                <button type="submit">Выйти</button>
-            </form>
-        </div>
-        {{else}}
-        <nav>
-            <a href="/login">Войти</a>
-            <a href="/register">Регистрация</a>
-        </nav>
-        {{end}}
-    </header>
+    {{template "header.html" .}}
     <main>
         <p>Добро пожаловать в Music App. Выберите действие.</p>
     </main>
